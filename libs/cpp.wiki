@@ -753,6 +753,35 @@ vector<int> v;
 for_each(v.begin(), v.end(), cout << boost::lambda::_1 << "\n");
 </source>
 
+<h4>simple_match</h4>
+
+Home：[https://github.com/jbandela/simple_match]
+
+这个库是为了提供类似 Rust 语言中的 match 语法。
+
+（不懂 Rust 的同学，可以把 match 语法视作增强版的 switch/case）
+
+代码示例
+<source lang="cpp">
+&#35;include <iostream>
+&#35;include <simple_match/simple_match.hpp>
+using namespace simple_match;
+using namespace simple_match::placeholders;
+
+int x = 0;
+while (true)
+{
+    std::cin >> x;
+    match(x,
+        1, []() { std::cout << "one\n"; },
+        2, []() { std::cout << "two\n"; },
+        _x < 10, [](auto&& n) { std::cout << n << " is less than 10\n"; },
+        10 < _x < 20,	[](auto&& n) { std::cout << n << " is between 10 and 20 exclusive\n"; },
+        _, []() { std::cout << "NOT match\n"; }
+    );
+}
+</source>
+
 == 3.4 元编程（Metaprogramming） ==
 
 （不知道何为“元编程”，可以先看[https://zh.wikipedia.org/wiki/%E5%85%83%E7%BC%96%E7%A8%8B 维基百科]）
@@ -1301,6 +1330,18 @@ Home：[http://wxmathplot.sourceforge.net/]
 
 看名称就知道它是跟 wxWidgets 搭配的。效果图参见“[http://wxmathplot.sourceforge.net/screenshot.shtml 这里]”
 
+== 6.3 文本编辑 ==
+
+<h4>Scintilla</h4>
+
+Home：[https://scintilla.org/]
+
+Links：[https://en.wikipedia.org/wiki/Scintilla_(software) Wikipedia]
+
+功能【超强】的文本编辑组件，支持：词法高亮、代码折叠、自动补全、动态提示......（基本上你能想到的，它都已经有了）
+
+不光功能齐全，还支持各种主流的操作系统平台。很多编辑器/IDE 用到它。
+
 ----
 
 = 7 文本用户界面（TUI） =
@@ -1387,6 +1428,57 @@ Docs：[http://boost.org/libs/program_options]
 Boost 前面已经介绍过。这是 Boost 的其中一个子库，提供了“处理命令行参数”的功能。
 
 它的功能很丰富，但是比较重型。
+
+<h4>docopt</h4>
+
+Home：[https://github.com/docopt/docopt.cpp]
+
+这是一个很有创意的库，提供了一种【全新】的方式来处理命令行参数。
+
+你只需定义好命令行的帮助文本（usage），该库会根据 usage 文本自动分析出命令行参数的定义。
+
+也就是说：用了这个库，就无需再写一大堆 parse 命令行参数的代码 :)
+
+代码示例
+<source lang="cpp">
+&#35;include <iostream>
+&#35;include <docopt.h>
+
+static const char USAGE[] =
+R"(Naval Fate.
+
+    Usage:
+      naval_fate ship new <name>...
+      naval_fate ship <name> move <x> <y> [--speed=<kn>]
+      naval_fate ship shoot <x> <y>
+      naval_fate mine (set|remove) <x> <y> [--moored | --drifting]
+      naval_fate (-h | --help)
+      naval_fate --version
+
+    Options:
+      -h --help     Show this screen.
+      --version     Show version.
+      --speed=<kn>  Speed in knots [default: 10].
+      --moored      Moored (anchored) mine.
+      --drifting    Drifting mine.
+)";
+
+int main(int argc, const char* argv[])
+{
+    std::map<std::string, docopt::value> args
+        = docopt::docopt(USAGE,
+                         { argv + 1, argv + argc },
+                         true,               // 是否显示帮助
+                         "Naval Fate 2.0");  // 版本号
+
+    for(auto const& arg : args)
+    {
+        std::cout << arg.first <<  arg.second << std::endl;
+    }
+
+return 0;
+}
+</source>
 
 == 7.2 文本终端 ==
 
@@ -2517,6 +2609,28 @@ Docs：[http://pocoproject.org/docs/package-Net.HTTPClient.html]
 
 POCO 前面已经介绍过。它提供了 HTTP Client 的封装类。
 
+<h4>cpr</h4>
+
+Home：[https://github.com/whoshuu/cpr]
+
+类似 Python 的 [http://docs.python-requests.org/ Requests 库]，以【优雅的语法】实现 HTTP 请求。
+
+代码示例——HTTP GET
+<source lang="cpp">
+&#35;include <cpr/cpr.h>
+
+int main()
+{
+    auto r = cpr::Get(cpr::Url{"https://api.github.com/repos/whoshuu/cpr/contributors"},
+                      cpr::Authentication{"user", "pass"},
+                      cpr::Parameters{{"anon", "true"}, {"key", "value"}});
+    r.status_code;                  // 200
+    r.header["content-type"];       // application/json; charset=utf-8
+    r.text;                         // JSON text string
+    return 0;
+}
+</source>
+
 == 10.3 浏览器引擎 ==
 
 <h4>WebKit</h4>
@@ -2970,6 +3084,18 @@ Home：[http://podofo.sourceforge.net/]
 基于 C++ 开发的跨平台库，名称取自“Portable Document Format”每个单词的头两个字母 :)
 
 它既支持 PDF 文件的生成，也支持 PDF 内容的提取。它同时还提供[http://podofo.sourceforge.net/tools.html 一堆命令行的小工具]，用来操作 PDF 文件。
+
+<h4>Poppler</h4>
+
+Home：[https://poppler.freedesktop.org/]
+
+Links：[https://en.wikipedia.org/wiki/Poppler_%28software%29 Wikipedia]
+
+派生自 Xpdf 3.0 的开源库，用于渲染 PDF 的内容。很多开源的 PDF 阅读软件用到它。
+
+在开源界，它第一个【完整】实现了 ISO 32000-1（PDF 的 ISO 标准）。
+
+它内置了若干命令行工具（poppler-utils），可以用来进行 PDF 的内容提取和格式转换。
 
 <h4>LibHaru</h4>
 
@@ -3522,6 +3648,133 @@ BOOST_PYTHON_MODULE(hello_ext)
 // 以下是调用该模块的 Python 代码
 // import hello_ext
 // print(hello_ext.greet())
+</source>
+
+<h4>Cython</h4>
+
+Home：[http://cython.org/]
+
+Links：[https://en.wikipedia.org/wiki/Cython Wikipedia]
+
+Cython 提供了一种机制（编译器）编译 Python 代码为【原生代码】。编译后的原生代码是个 Python 的 module（扩展名是 pyd 或 so），可以在常规的 Python 环境中用 import 语句加载。如此一来，既得到了类似 C/C++ 的高性能，又保留了 Python 语法的简介性。
+
+另外，它也提供了把 C/C++ 代码编译为 Python 模块的机制。
+
+=== 17.2.2 整合 JavaScript 语言 ===
+
+<h4>V8</h4>
+
+Home：[https://github.com/v8/v8]
+
+Links：[https://en.wikipedia.org/wiki/Chrome_V8 Wikipedia]
+
+这就是大名鼎鼎的 V8 引擎，Google 公司开发，C++ 编写，被用于 Chrome 浏览器。
+
+既然用于 Chrome 浏览器，显然【完整地】支持了 JS 语言的规范（ECMA-262）。
+
+它既可以独立运行，也可以嵌入到 C++ 程序中。
+
+代码示例——Hello world
+<source lang="cpp">
+&#35;include <stdio.h>
+&#35;include <stdlib.h>
+&#35;include <string.h>
+&#35;include <libplatform/libplatform.h>
+&#35;include <v8.h>
+
+int main(int argc, char* argv[])
+{
+    // Initialize V8.
+    v8::V8::InitializeICUDefaultLocation(argv[0]);
+    v8::V8::InitializeExternalStartupData(argv[0]);
+    std::unique_ptr<v8::Platform> platform = v8::platform::NewDefaultPlatform();
+    v8::V8::InitializePlatform(platform.get());
+    v8::V8::Initialize();
+
+    // Create a new Isolate and make it the current one.
+    v8::Isolate::CreateParams create_params;
+    create_params.array_buffer_allocator = v8::ArrayBuffer::Allocator::NewDefaultAllocator();
+    v8::Isolate* isolate = v8::Isolate::New(create_params);
+
+    {
+        v8::Isolate::Scope isolate_scope(isolate);
+        // Create a stack-allocated handle scope.
+        v8::HandleScope handle_scope(isolate);
+        // Create a new context.
+        v8::Local<v8::Context> context = v8::Context::New(isolate);
+        // Enter the context for compiling and running the hello world script.
+        v8::Context::Scope context_scope(context);
+        // Create a string containing the JavaScript source code.
+        v8::Local<v8::String> source =
+        v8::String::NewFromUtf8(isolate, "'Hello World!'",
+                                v8::NewStringType::kNormal).ToLocalChecked();
+        // Compile the source code.
+        v8::Local<v8::Script> script = v8::Script::Compile(context, source).ToLocalChecked();
+        // Run the script to get the result.
+        v8::Local<v8::Value> result = script->Run(context).ToLocalChecked();
+        // Convert the result to an UTF8 string and print it.
+        v8::String::Utf8Value utf8(isolate, result);
+        printf("%s\n", *utf8);
+    }
+
+    // Dispose the isolate and tear down V8.
+    isolate->Dispose();
+    v8::V8::Dispose();
+    v8::V8::ShutdownPlatform();
+    delete create_params.array_buffer_allocator;
+    return 0;
+}
+</source>
+
+<h4>nbind</h4>
+
+Home：[https://github.com/charto/nbind]
+
+把 C++ 代码编译为 JS 的 package。编译方式支持“原生二进制”或“asm.js”。
+
+编译需要依赖 Node.js，运行环境支持 Node.js 或浏览器。
+
+代码示例——C++ 代码
+<source lang="cpp">
+&#35;include <string>
+&#35;include <iostream>
+
+struct Greeter
+{
+    static void sayHello(std::string name)
+    {
+        std::cout << "Hello, " << name << "\n";
+    }
+};
+
+// 建立绑定
+&#35;include <nbind/nbind.h>
+
+NBIND_CLASS(Greeter)
+{
+    method(sayHello);
+}
+</source>
+
+代码示例——node.js 环境调用代码
+<source lang="javascript">
+var nbind = require("nbind");
+var lib = nbind.init().lib;
+lib.Greeter.sayHello("you");
+</source>
+
+代码示例——浏览器环境调用代码
+<source lang="html">
+<script src="nbind.js"></script>
+<script>
+  nbind.init(
+    function(err, binding)
+    {
+      var lib = binding.lib;
+      lib.Greeter.sayHello("you");
+    }
+  );
+</script>
 </source>
 
 ----

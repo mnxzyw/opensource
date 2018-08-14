@@ -322,8 +322,8 @@ if &#95;&#95;name&#95;&#95; == "&#95;&#95;main&#95;&#95;" :
 代码示例——启动命令行进程，并获取该进程的标准输出
 <source lang="python">
 import subprocess
-output = subprocess.check_output(["dir"])  &#35; 获取当前目录的内容
-output = subprocess.check_output(["netstat", "-an"])  &#35; 获取当前网络链接
+output = subprocess.check_output(["dir"])  # 获取当前目录的内容
+output = subprocess.check_output(["netstat", "-an"])  # 获取当前网络链接
 </source>
 
 <h4>multiprocessing</h4>
@@ -366,7 +366,7 @@ map = mmap.mmap(-1, 13)
 map.write("Hello, world")
 
 pid = os.fork()
-if pid == 0 :  &#35; 子进程
+if pid == 0 :  # 子进程
     map.seek(0)
     print(map.readline())
     map.close()
@@ -378,7 +378,95 @@ if pid == 0 :  &#35; 子进程
 
 用于进程信号处理的标准库（主要用于 Linux & UNIX 系统）。
 
-== 3.5 Linux & Unix 系统相关 ==
+== 3.5 操作硬件 ==
+
+<h4>keyboard</h4>
+
+Home：[https://github.com/boppreh/keyboard]
+
+顾名思义，这个库让你可以进行各种键盘相关的操作，包括：模拟按键、键盘钩子（hook），按键记录及重放。
+
+支持复杂的组合键。纯 python 代码代码，同时支持 Windows 和 Linux。
+
+代码示例
+<source lang="python">
+import keyboard
+
+&#35; 模拟按键。
+keyboard.press_and_release("shift+s, space")
+
+&#35; 模拟按键，并执行相应代码。
+keyboard.add_hotkey("page up, page down", lambda: keyboard.write("xxxx"))
+
+&#35; 等待特定按键，然后继续执行。
+keyboard.wait("esc")
+
+&#35; 记录按键，直到用户按了 ESC；然后以3倍速重放刚才记录的按键。
+recorded = keyboard.record(until="esc")
+keyboard.play(recorded, speed_factor=3)
+</source>
+
+== 3.6 获取系统信息 ==
+
+<h4>sys</h4>
+
+【标准库】
+
+这个模块可供访问由解释器使用或维护的变量和与解释器进行交互的函数。
+
+代码示例
+<source lang="python">
+sys.argv     # 命令行参数 List，第一个元素是程序本身路径
+sys.exit(0)  # 退出程序，正常退出时用 0 表示退出码
+sys.version  # 获取 Python 解释程序的版本信息
+</source>
+
+<h4>platform</h4>
+
+【标准库】
+
+这个模块提供了很多用于获取操作系统的信息的功能。
+
+代码示例
+<source lang="python">
+import platform
+
+platform.platform()      # 获取操作系统名称及版本号，例如："Windows-7-6.1.7601-SP1"
+platform.version()       # 获取操作系统版本号，例如："6.1.7601"
+platform.architecture()  # 获取操作系统的架构，例如：("32bit", "WindowsPE")
+</source>
+
+<h4>psutil</h4>
+
+Home：[https://github.com/giampaolo/psutil]
+
+psutil（Python system and process utilities）是一个跨平台的进程管理和系统工具库，可以处理”CPU、内存、磁盘、网络、用户“等信息。
+
+主要用于系统资源的监控，分析，以及对进程进行一定的管理。
+
+代码示例
+<source lang="python">
+import psutil
+
+psutil.cpu_count()       # 获取 CPU 数量
+psutil.cpu_freq()        # 获取 CPU 频率
+
+psutil.virtual_memory()  # 获取内存信息
+psutil.swap_memory()     # 获取交换分区（换页文件）信息
+
+psutil.disk_partitions() # 获取分区信息
+psutil.disk_usage('/')   # 获取某分区的使用情况
+
+psutil.users()           # 获取用户信息
+
+p = psutil.Process(pid)  # 根据给定的 pid 获得进程对象
+p.name()                 # 进程名
+p.exe()                  # 可执行程序的全路径
+p.cwd()                  # 进程的当前目录
+p.cmdline()              # 启动进程的命令行参数
+</source>
+
+== 3.7 Linux & Unix 系统相关 ==
 
 <h4>syslog</h4>
 
@@ -386,7 +474,7 @@ if pid == 0 :  &#35; 子进程
 
 通过它可以很方便地跟 POSIX 的 syslog 服务进行交互。
 
-== 3.6 Windows 系统相关 ==
+== 3.8 Windows 系统相关 ==
 
 <h4>PyWin32</h4>
 
@@ -394,7 +482,7 @@ Home：[http://python.net/crew/mhammond/win32/]
 
 这个第三方库封装了 Windows API 及 COM API。通过它可以方便地用 Python 进行 Windows 编程（调用 COM 组件、编写 Windows 服务、等）。
 
-== 3.7 程序打包 ==
+== 3.9 程序打包 ==
 
 <h4>PyInstaller</h4>
 
@@ -526,8 +614,8 @@ Links：[https://en.wikipedia.org/wiki/CherryPy Wikipedia]
 <source lang="python">
 import cherrypy
 
-class HelloWorld(object):
-    def index(self):
+class HelloWorld(object) :
+    def index(self) :
         return "Hello World!"
     index.exposed = True
 
@@ -552,14 +640,43 @@ urls = (
     "/", "index"
 )
 
-class index:
-    def GET(self):
+class index :
+    def GET(self) :
         return "Hello, world!"
 
 if &#95;&#95;name&#95;&#95; == "&#95;&#95;main&#95;&#95;" :
     app = web.application(urls, globals())
     app.run()
 </source>
+
+<h4>Flask</h4>
+
+Home：[http://flask.pocoo.org/]
+
+Links：[https://zh.wikipedia.org/wiki/Flask 维基百科]
+
+轻量级 Web 应用框架。基于 Werkzeug WSGI 工具箱和 Jinja2 模板引擎。
+
+代码示例——Hello world
+<source lang="python">
+from flask import Flask
+app = Flask(&#95;&#95;name&#95;&#95;)
+
+app.route("/")
+def hello_world() :
+    return “Hello World!"
+
+if &#95;&#95;name&#95;&#95; == "&#95;&#95;main&#95;&#95;" :
+    app.run()
+</source>
+
+<h4>Tornado</h4>
+
+Home：[http://www.tornadoweb.org/]
+
+Links：[https://zh.wikipedia.org/wiki/Tornado 维基百科]
+
+同样也是轻量级的 Web 框架，类似 Web.py。提供异步非阻塞 IO 的处理方式使其拥有较为出色的抗负载能力。
 
 == 4.4 Web前端 & JS整合 ==
 
@@ -603,15 +720,15 @@ import PyV8
 
 ctxt1 = PyV8.JSContext()
 ctxt1.enter()
-ctxt1.eval("1+2")  &#35; 对 JS 表达式求值
+ctxt1.eval("1+2")  # 对 JS 表达式求值
 
-class Global(PyV8.JSClass) :  &#35; 定义一个兼容 JS 的类
+class Global(PyV8.JSClass) :  # 定义一个兼容 JS 的类
     def hello(self) :
         print("Hello, world")
 
-ctxt2 = PyV8.JSContext(Global())  &#35; 创建一个 JS 上下文，传入 Global 类的对象
+ctxt2 = PyV8.JSContext(Global())  # 创建一个 JS 上下文，传入 Global 类的对象
 ctxt2.enter()                    
-ctxt2.eval("hello()")  &#35; 调用 hello() 函数
+ctxt2.eval("hello()")  # 调用 hello() 函数
 </source>
 
 <h4>PyWebKitGtk</h4>
@@ -632,6 +749,33 @@ Home：[https://github.com/google/pywebsocket]
 
 该项目包含一个可独立运行的 server 以及一个 Apache 扩展模块（mod_pywebsocket）。
 
+<h4>selenium</h4>
+
+Home：[http://www.seleniumhq.org/]
+
+selenium 是一个非常优秀的框架，用于爬虫和 Web 自动化测试。
+
+代码示例——模拟登录
+<source lang="python">
+from selenium import webdriver
+
+driver = webdriver.Chrome()
+driver.get("http://192.168.1.1")
+driver.find_element_by_xpath('//*[@id="lgPwd"]').send_keys("123456")
+driver.find_element_by_xpath('//*[@id="loginSub"]').click()
+driver.quit()
+</source>
+
+<h4>scrapy</h4>
+
+Home：[https://scrapy.org/]
+
+Links：[https://en.wikipedia.org/wiki/Scrapy Wikipedia]
+
+Scrapy 是一个为了爬取网站数据，提取结构性数据而编写的应用框架。
+
+可以应用在包括数据挖掘，信息处理或存储历史数据等一系列的程序中。
+
 ----
 
 = 5 网络 =
@@ -650,7 +794,7 @@ Links：[https://en.wikipedia.org/wiki/Scapy Wikipedia]
 
 代码示例
 <source lang="python">
-&#35; 传统的 ping 扫描（网络层）
+# 传统的 ping 扫描（网络层）
 ans,unans = sr(IP(dst="192.168.1.1-254")/ICMP())
 
 &#35; 局域网内的 ARP 扫描（链路层）
@@ -718,10 +862,10 @@ body = buffer.getvalue()
 <source lang="python">
 from ftplib import FTP
 
-ftp = FTP("ftp.debian.org")  &#35; 连接服务器（如果不指定端口号，则用默认端口号 21）
-ftp.login()                  &#35; 登录（如果不指定用户名和密码，则用匿名登录）
-ftp.cwd("debian")            &#35; 切换到 "debian" 目录
-ftp.retrlines("LIST")        &#35; 列出当前目录的内容
+ftp = FTP("ftp.debian.org")  # 连接服务器（如果不指定端口号，则用默认端口号 21）
+ftp.login()                  # 登录（如果不指定用户名和密码，则用匿名登录）
+ftp.cwd("debian")            # 切换到 "debian" 目录
+ftp.retrlines("LIST")        # 列出当前目录的内容
 ftp.quit()
 </source>
 
@@ -736,9 +880,9 @@ Home：[https://bitbucket.org/dundeemt/pysftp]
 import pysftp
 
 with pysftp.Connection("hostxxx", username="userxxx", password="xxxxxx") as sftp :
-    with sftp.cd("public")              &#35; 服务端当前目录切换到 public
-        sftp.put("/my/local/filename")  &#35; 上传某个本地文件到服务端的 public 目录
-    sftp.get_r("myfiles", "/local")     &#35; 递归复制某个服务端的目录到本地
+    with sftp.cd("public")              # 服务端当前目录切换到 public
+        sftp.put("/my/local/filename")  # 上传某个本地文件到服务端的 public 目录
+    sftp.get_r("myfiles", "/local")     # 递归复制某个服务端的目录到本地
 </source>
 
 === 5.3.4 电子邮件 ===
@@ -761,6 +905,22 @@ with pysftp.Connection("hostxxx", username="userxxx", password="xxxxxx") as sftp
 
 封装 POP3（Post Office Protocol v3）协议
 
+<h4>yagmail</h4>
+
+Home：[https://github.com/kootenpv/yagmail]
+
+一个非常简单易用的用来发送邮件的第三方库。
+
+代码示例
+<source lang="python">
+import yagmail
+
+yag = yagmail.SMTP("my_gmail_username", "my_gmail_password")
+contents = ["This is the body, and here is just text http://somedomain/image.png",
+            "You can find an audio file attached.', '/local/path/song.mp3"]
+yag.send("to@someone.com", "subject", contents)
+</source>
+
 === 5.3.5 即时通讯 ===
 
 <h4>jabber.py</h4>
@@ -774,6 +934,18 @@ Jabber（又称 XMPP）是IM（即时通信）协议的标准。这是用 Python
 Home：[https://bitbucket.org/jaraco/irc]
 
 IRC 是 Internet Relay Chat 的缩写。这是用 Python 封装的第三方库。
+
+<h4>pyTelegramBotAPI</h4>
+
+Home：[https://github.com/eternnoir/pyTelegramBotAPI]
+
+一个简单、易用的 [https://core.telegram.org/bots TelegramBot] 封装。
+
+<h4>Telethon</h4>
+
+Home：[https://github.com/LonamiWebs/Telethon]
+
+纯 Python3 的 [https://telegram.org/ Telegram] 客户端封装。
 
 === 5.3.6 远程控制 ===
 
@@ -812,6 +984,23 @@ print tn.read_all()
 Home：[https://github.com/citronneur/rdpy]
 
 纯 Python 实现的 RDP（[https://en.wikipedia.org/wiki/Remote_Desktop_Protocol 微软远程桌面协议]）和 VNC（[https://en.wikipedia.org/wiki/Virtual_Network_Computing Virtual Network Computing]）客户端，依赖于 Twisted 库
+
+<h4>paramiko</h4>
+
+Home：[http://www.paramiko.org/]
+
+paramiko 是用 python 语言写的一个模块，遵循SSH2协议，支持以加密和认证的方式，进行远程服务器的连接。
+
+除了 SSH 协议之外，paramiko 还支持SFTP。
+
+代码示例
+<source lang="python">
+import paramiko
+
+ssh = paramiko.SSHClient()
+ssh.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+ssh.connect("IP",  port, "username", "password")
+</source>
 
 === 5.3.7 （其它） ===
 
@@ -1083,7 +1272,7 @@ sqlite3 从 Python 2.5 版本开始加入到标准库中。通过它，你可以
 代码示例——创建一个内存数据库，建表并插入记录
 <source lang="python">
 import sqlite3
-conn = sqlite3.connect(":memory:")  &#35; ":memory:" 表示这是一个内存数据库
+conn = sqlite3.connect(":memory:")  # ":memory:" 表示这是一个内存数据库
 cursor = conn.cursor()
 cursor.execute("CREATE TABLE person (name text, age int)")
 cursor.execute("INSERT INTO stocks VALUES ('TOM',20)")
@@ -1246,14 +1435,14 @@ class Person(Model) :
     birthday = DateField()
     is_relative = BooleanField()
     class Meta :
-        database = db  &#35; This model uses the "test.db".
+        database = db  # This model uses the "test.db".
 
 class Pet(Model) :
     owner = ForeignKeyField(Person, related_name="pets")
     name = CharField()
     animal_type = CharField()
     class Meta :
-        database = db  &#35; This model uses the "test.db".
+        database = db  # This model uses the "test.db".
 
 db.connect()
 db.create_tables([Person, Pet])
@@ -1525,6 +1714,14 @@ Home：[http://code.enthought.com/chaco/]
 
 这是一个商业公司维护的库，主要提供2维图表。效果图在“[http://docs.enthought.com/chaco/user_manual/annotated_examples.html 这里]”。
 
+<h4>Plotly</h4>
+
+Home：[https://plot.ly/]
+
+plotly 是现代平台的敏捷商业智能和数据科学库。
+
+它作为一款开源的绘图库，可以应用于 Python、R、MATLAB、Excel、JavaScript、jupyter 等多种语言。
+
 ----
 
 = 8 信息安全 =
@@ -1566,6 +1763,29 @@ Home：[https://github.com/google/keyczar]
 这是 Google 提供的加密库，同时提供 C++、Java、Python 三种语言的实现。
 
 它提供了比较高层的 API， 使用者无需关心太多的细节。
+
+<h4>passlib</h4>
+
+Home：[https://bitbucket.org/ecollins/passlib/]
+
+passlib 是一个久经考验的非常成熟的跨平台的散列函数库，它所提供的功能包括随机盐密码的生成与验证，两步验证等。
+
+代码示例——验证随机盐密码
+<source lang="python">
+>>> # import the hash algorithm
+>>> from passlib.hash import pbkdf2_sha256
+
+>>> # generate new salt, and hash a password
+>>> hash = pbkdf2_sha256.hash("toomanysecrets")
+>>> hash
+'$pbkdf2-sha256$29000$N2YMIWQsBWBMae09x1jrPQ$1t8iyB2A.WF/Z5JZv.lfCIhXXN33N23OSgQYThBYRfk'
+
+>>> # verifying the password
+>>> pbkdf2_sha256.verify("toomanysecrets", hash)
+True
+>>> pbkdf2_sha256.verify("joshua", hash)
+False
+</source>
 
 == 8.2 访问控制 ==
 
@@ -1718,6 +1938,16 @@ Home：[http://lxml.de/]
 【标准库】
 
 以回调方式解析 HTML/XHTML 文件内容。
+
+<h4>beautifulsoup</h4>
+
+Home：[https://www.crummy.com/software/BeautifulSoup/]
+
+Links：[https://zh.wikipedia.org/zh-cn/Beautiful_Soup 维基百科]
+
+Beautiful Soup 可以从 HTML 或 XML 文件中提取数据。
+
+它是写”爬虫“的利器，通常与 requests 或 selenium 配合。
 
 == 9.4 PDF ==
 
@@ -2008,7 +2238,7 @@ Links：[https://en.wikipedia.org/wiki/NumPy Wikipedia] [https://zh.wikipedia.or
 
 代码示例
 <source lang="python">
-&#35; 以下是传统 Python 写法，冗长且速度较慢
+# 以下是传统 Python 写法，冗长且速度较慢
 a = range(10000000)
 b = range(10000000)
 c = []
